@@ -1,0 +1,687 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Game Design Document (GDD)</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(50, 48, 44, 1);
+}
+.highlight-gray {
+	color: rgba(115, 114, 110, 1);
+	fill: rgba(115, 114, 110, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(205, 60, 58, 1);
+	fill: rgba(205, 60, 58, 1);
+}
+.highlight-default_background {
+	color: rgba(50, 48, 44, 1);
+}
+.highlight-gray_background {
+	background: rgba(248, 248, 247, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(248, 243, 252, 1);
+}
+.highlight-pink_background {
+	background: rgba(252, 241, 246, 1);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(115, 114, 110, 1);
+	fill: rgba(115, 114, 110, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(205, 60, 58, 1);
+	fill: rgba(205, 60, 58, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(248, 248, 247, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(248, 243, 252, 1);
+}
+.block-color-pink_background {
+	background: rgba(252, 241, 246, 1);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: undefined; }
+.select-value-color-pink { background-color: rgba(225, 136, 179, 0.27); }
+.select-value-color-purple { background-color: rgba(168, 129, 197, 0.27); }
+.select-value-color-green { background-color: rgba(123, 183, 129, 0.27); }
+.select-value-color-gray { background-color: rgba(84, 72, 49, 0.15); }
+.select-value-color-translucentGray { background-color: undefined; }
+.select-value-color-orange { background-color: rgba(224, 124, 57, 0.27); }
+.select-value-color-brown { background-color: rgba(210, 162, 141, 0.35); }
+.select-value-color-red { background-color: rgba(244, 171, 159, 0.4); }
+.select-value-color-yellow { background-color: rgba(236, 191, 66, 0.39); }
+.select-value-color-blue { background-color: rgba(93, 165, 206, 0.27); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="1ca87d78-2d52-8023-9524-e174a4652c94" class="page sans"><header><h1 class="page-title">Game Design Document (GDD)</h1><p class="page-description"></p></header><div class="page-body"><h1 id="1d287d78-2d52-8090-aa41-ca9ca87d83fc" class="">Nome do Projeto</h1><ul id="1ce87d78-2d52-8075-8a2b-e5cc84880f64" class="bulleted-list"><li style="list-style-type:disc"><em><mark class="highlight-default"><mark class="highlight-default_background"><strong>Epic Sky Boss Battle</strong></mark></mark></em></li></ul><h1 id="1cc87d78-2d52-80f8-8067-e47cca5895dc" class="">Highconcept</h1><p id="1cc87d78-2d52-8062-817c-f2abc2e710e4" class="">Controle um herói voador e sobreviva a hordas de monstros ascendentes usando sua espada e agilidade. Aprimore seus atributos para enfrentar inimigos cada vez mais fortes e derrote um chefe colossal antes que o tempo acabe ou ele alcance o topo.</p><h1 id="1ce87d78-2d52-8011-af51-f1647a9b32e8" class="">Gênero</h1><p id="1d287d78-2d52-80b2-beb8-ef66e15425f0" class="">Ação, Arcade, Sobrevivência.</p><h1 id="1ce87d78-2d52-80a2-8404-d2613e6ad94f" class="">Gameplay e Enredo</h1><p id="1ce87d78-2d52-80c0-942d-e465c560051d" class=""><strong>Enredo:</strong> Uma horda de monstros de poeira emergiu do espaço ameaçando consumir o céu. Controle um herói equipado com sua botas-foguete e espada, voe pelos céus e detenha essa invasão cósmica.</p><p id="1ce87d78-2d52-800c-b05b-d8dbefd160af" class=""><strong>Objetivo Principal:</strong> Sobreviver por 15 minutos ou atingir o nível 20 para invocar o chefe final, e então derrotá-lo.</p><p id="1ce87d78-2d52-80a0-ad73-c30f7f0dd9cd" class=""><strong>Progressão e Atributos:</strong><div class="indented"><ul id="1ce87d78-2d52-8033-9612-faa896a22658" class="bulleted-list"><li style="list-style-type:disc">O jogador ganha XP por inimigo derrotado.</li></ul><ul id="1ce87d78-2d52-8090-98e3-ca15a60ea2aa" class="bulleted-list"><li style="list-style-type:disc">A barra de XP no HUD mostra o progresso para o próximo nível.</li></ul><ul id="1ce87d78-2d52-80b1-b325-c87f3e4b0576" class="bulleted-list"><li style="list-style-type:disc">Ao subir de nível, o jogador acessa a Tela de Atributos para gastar pontos.</li></ul><ul id="1ce87d78-2d52-80bd-a2b4-e1e2262ffa40" class="bulleted-list"><li style="list-style-type:disc">Atributos:<ul id="1ce87d78-2d52-80c4-a97a-c2fc8f2b2486" class="bulleted-list"><li style="list-style-type:circle">Força da Espada: Aumenta o dano do ataque.</li></ul><ul id="1ce87d78-2d52-80e3-9b93-da0331a84238" class="bulleted-list"><li style="list-style-type:circle">Velocidade de Ataque: Diminui o tempo entre os ataques.</li></ul><ul id="1ce87d78-2d52-80b9-80b3-d21c75e4e522" class="bulleted-list"><li style="list-style-type:circle">Velocidade das Botas: Aumenta a velocidade de movimento do herói.</li></ul><ul id="1ce87d78-2d52-809b-869e-eed6d9b9720d" class="bulleted-list"><li style="list-style-type:circle">Alcance da Espada: Aumenta a área de efeito do ataque.</li></ul><ul id="1ce87d78-2d52-8023-88f2-db3b792ebaef" class="bulleted-list"><li style="list-style-type:circle">Resistência do Escudo (HP): Aumenta a quantidade de &quot;erros&quot; permitidos antes do Game Over.</li></ul></li></ul><p id="1ce87d78-2d52-8008-8bee-d352c67cd769" class="">Condições de Vitória e Derrota:<div class="indented"><ul id="1ce87d78-2d52-80d3-8801-d360727d3fd9" class="bulleted-list"><li style="list-style-type:disc">Vitória: Derrotar o chefe final.</li></ul><ul id="1ce87d78-2d52-8031-b2ab-ec34fe3b93b5" class="bulleted-list"><li style="list-style-type:disc">Derrota:<ul id="1ce87d78-2d52-80ec-85ff-c0fef5503906" class="bulleted-list"><li style="list-style-type:circle">Um número X de monstros básicos atinge o topo da tela (Ex: 10 monstros);</li></ul><ul id="1ce87d78-2d52-8099-8e7d-e005e1317780" class="bulleted-list"><li style="list-style-type:circle">O chefe final atinge o topo da tela;</li></ul></li></ul></div></p></div></p><h1 id="1ce87d78-2d52-8054-95a5-e8b827a86ec5" class="">Interface de usuário</h1><p id="1d287d78-2d52-807d-b5bd-fcd012ab1cac" class="">
+</p><div id="1ce87d78-2d52-80f1-bbaf-d60405b251a1" class="column-list"><div id="1ce87d78-2d52-8056-9546-c603993585b7" style="width:50%" class="column"><figure id="1ce87d78-2d52-808a-a9ef-cadb21eb94ac" class="image"><a href="image.png"><img style="width:432px" src="image.png"/></a></figure></div><div id="1ce87d78-2d52-80ec-8e11-cf90fd3b7cfb" style="width:50%" class="column"><figure id="1ce87d78-2d52-8033-bb07-fd05ed63ef54" class="image"><a href="image%201.png"><img style="width:432px" src="image%201.png"/></a></figure></div></div><div id="1ce87d78-2d52-8070-87a6-f40e3c4cd320" class="column-list"><div id="1ce87d78-2d52-80c6-a697-fd64b0e5f2f2" style="width:50%" class="column"><figure id="1ce87d78-2d52-8038-bdcb-d7305be548af" class="image"><a href="image%202.png"><img style="width:432px" src="image%202.png"/></a></figure><p id="1cf87d78-2d52-801a-bb2d-ca25c5e1952d" class="">
+</p><figure id="1cf87d78-2d52-80fd-a905-f63314b25d01" class="image"><a href="96f8b145-0a64-4737-badd-3103126dbbf3.jpg"><img style="width:332px" src="96f8b145-0a64-4737-badd-3103126dbbf3.jpg"/></a></figure><p id="1cf87d78-2d52-808d-9a37-cfeb133c4540" class="">
+</p></div><div id="1ce87d78-2d52-8012-90e4-d4ca05735ed5" style="width:50%" class="column"><figure id="1ce87d78-2d52-8040-b493-f92a80be551b" class="image"><a href="image%203.png"><img style="width:432px" src="image%203.png"/></a></figure><p id="1ce87d78-2d52-8009-9007-f3231ee4e1c6" class="">
+</p><figure id="1cf87d78-2d52-80d4-9a7a-d186141ab97c" class="image"><a href="vitoria.png"><img style="width:332px" src="vitoria.png"/></a></figure></div></div><h1 id="1ce87d78-2d52-8086-9c64-f46655d4ccbe" class="">Áudio e música</h1><ul id="1ce87d78-2d52-8001-8d9c-f96cdb31fe04" class="bulleted-list"><li style="list-style-type:disc">Gameplay Normal: Música épica, heróica, com ritmo crescente conforme o tempo passa ou a dificuldade aumenta.</li></ul><ul id="1ce87d78-2d52-8065-9ce0-e5c86cff8abd" class="bulleted-list"><li style="list-style-type:disc">Boss Fight: Música tensa, dramática, de suspense, mais pesada e intensa.</li></ul><ul id="1ce87d78-2d52-80a0-90c8-c0440255ce4f" class="bulleted-list"><li style="list-style-type:disc">Menu Principal: Tema principal do jogo, talvez uma versão mais calma da música épica.</li></ul><ul id="1ce87d78-2d52-80ff-838e-f0cb40810e7d" class="bulleted-list"><li style="list-style-type:disc">Efeitos Sonoros (SFX):<ul id="1ce87d78-2d52-809d-82e4-f0d6c8e07fdd" class="bulleted-list"><li style="list-style-type:circle">Jogador: Ataque de espada, Boost das botas, Morte do jogador;</li></ul><ul id="1ce87d78-2d52-8078-b009-fa6cc9fcd3d0" class="bulleted-list"><li style="list-style-type:circle">Inimigos: Som ambiente (murmúrio/chiado da horda), Morte do inimigo, Som de ataque do chefe, Morte do chefe.</li></ul><ul id="1ce87d78-2d52-80bf-85d7-c7e132eaefab" class="bulleted-list"><li style="list-style-type:circle">UI/Jogo: Clique de botão, Subir de Nível, Início de jogo, Fim de jogo (som de vitória/derrota).</li></ul></li></ul><h1 id="1ce87d78-2d52-802d-bae8-d0baeafcd7db" class="">Arte conceito e referências</h1><ul id="1ce87d78-2d52-8026-ba48-ea1610d5c880" class="bulleted-list"><li style="list-style-type:disc">Knightmare Tower: Combate contra inimigos ascendentes, aprimoramentos.</li></ul><ul id="1ce87d78-2d52-8083-9ee5-f34a2b645ee8" class="bulleted-list"><li style="list-style-type:disc">Space Invaders: Formação de inimigos subindo/descendo, ameaça chegando a uma linha limite.</li></ul><ul id="1ce87d78-2d52-8074-8894-fc078b640da6" class="bulleted-list"><li style="list-style-type:disc">Estilo Visual: Lembra jogos Flash simples ou mobile minimalistas.</li></ul><h1 id="1ce87d78-2d52-801e-b166-fae65e217584" class="">Ideias adicionais e observações </h1><ul id="1ce87d78-2d52-8045-9b8c-e091ccbbaa6a" class="bulleted-list"><li style="list-style-type:disc">Armas diferentes;</li></ul><ul id="1ce87d78-2d52-8061-9fb2-e6dff6020f91" class="bulleted-list"><li style="list-style-type:disc">Inimigos diferentes;</li></ul><ul id="1ce87d78-2d52-809d-9dea-e4410c0e1d3b" class="bulleted-list"><li style="list-style-type:disc">Ataques especiais;</li></ul><ul id="1ce87d78-2d52-80af-9b71-e90abf317742" class="bulleted-list"><li style="list-style-type:disc">Modo infinito;</li></ul><h1 id="1ce87d78-2d52-8082-a8ab-fe9458061b4b" class="">Autores</h1><ul id="1d287d78-2d52-8056-957b-f3662ccd89a8" class="bulleted-list"><li style="list-style-type:disc">Gabriel França</li></ul><ul id="1d287d78-2d52-806b-841e-d2439875ea2d" class="bulleted-list"><li style="list-style-type:disc">Gabriel Garcia</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

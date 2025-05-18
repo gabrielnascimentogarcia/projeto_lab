@@ -1,0 +1,52 @@
+# Imagens necessárias para a tela de atributos do personagem ("Epic Sky Boss Battle")
+
+1. fundo_atributos.png
+- Descrição: Imagem de fundo para a tela de atributos.
+- Estilo: Céu noturno ou ambiente tecnológico/épico, mantendo a identidade visual do menu principal.
+- Elementos sugeridos: Sutilezas como engrenagens, partículas de energia, ou símbolos de atributos (espada, escudo, botas, etc) em transparência.
+- Tamanho recomendado: 600x900 px (preenche toda a tela)
+
+2. painel_atributos.png
+- Descrição: Painel central onde os atributos e botões aparecem.
+- Estilo: Painel semi-transparente, bordas arredondadas, com detalhes metálicos ou mágicos.
+- Tamanho recomendado: 500x600 px (centralizado na tela)
+
+3. icone_forca.png
+- Descrição: Ícone para o atributo "Força da Espada".
+- Estilo: Espada estilizada, brilhante.
+- Tamanho recomendado: 64x64 px
+
+4. icone_ataque.png
+- Descrição: Ícone para o atributo "Velocidade de Ataque".
+- Estilo: Relógio, raio ou espada com efeito de movimento.
+- Tamanho recomendado: 64x64 px
+
+5. icone_botas.png
+- Descrição: Ícone para o atributo "Velocidade das Botas".
+- Estilo: Bota com efeito de velocidade/fumaça.
+- Tamanho recomendado: 64x64 px
+
+6. icone_espada_alcance.png
+- Descrição: Ícone para o atributo "Alcance da Espada".
+- Estilo: Espada longa ou com aura ao redor.
+- Tamanho recomendado: 64x64 px
+
+7. icone_escudo.png
+- Descrição: Ícone para o atributo "Resistência do Escudo (HP)".
+- Estilo: Escudo robusto, com brilho ou rachaduras.
+- Tamanho recomendado: 64x64 px
+
+8. botao_mais.png
+- Descrição: Botão para aumentar o atributo (+).
+- Estilo: Círculo ou quadrado com símbolo de mais, cor vibrante.
+- Tamanho recomendado: 48x48 px
+
+9. botao_confirmar.png
+- Descrição: Botão para confirmar a distribuição dos pontos.
+- Estilo: Botão grande, cor de destaque (verde ou azul), com texto "Confirmar" ou ícone de check.
+- Tamanho recomendado: 240x64 px
+
+# Observações
+- Todas as imagens (exceto fundo) devem ter fundo transparente.
+- O estilo deve remeter à fantasia/ação, mas ser limpo e intuitivo.
+- Consulte o GDD para manter a coerência visual e temática. 

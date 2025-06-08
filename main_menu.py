@@ -23,7 +23,6 @@ mouse = window.get_mouse()
 # Loop da tela inicial
 running = True
 while running:
-    # NÃO use window.clear() para evitar flicker
     bg_image.set_position(0, 0)
     bg_image.draw()
 

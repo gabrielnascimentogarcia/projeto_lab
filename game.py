@@ -1,80 +1,85 @@
 from PPlay.window import *
 from PPlay.keyboard import *
 from PPlay.sprite import *
+from PPlay.animation import *
+from settings import *
 
-posXplayer = 300
-posYplayer = 0
-velXplayer = 300
-velYplayer = 300
-player_state = 'idle'
-is_attacking = False
-start_attack_timer = 0
-attack_duration_ms = 50
-
-WIDTH, HEIGHT = 600, 900
 janela = Window(WIDTH, HEIGHT)
 teclado = janela.get_keyboard()
 
 player_idle = Sprite('imagens/player/player_idle.png', 7)
 player_idle.set_sequence_time(0, 7, 400, True)
 
-player_walking = Sprite('imagens/player/player_walking.png', 8)
-player_walking.set_sequence_time(0, 8, 100, True)
+player_attacking = Sprite('imagens/player/player_attacking_down.png', 7)
+player_attacking.set_sequence_time(0, 7, 50, False)
 
-player_attacking = Sprite('imagens/player/player_attacking.png', 14)
-player_attacking.set_sequence_time(0, 14, attack_duration_ms, False)
+posXplayer = (WIDTH + player_idle.width)/3
+posYplayer = 0
+posYdash = HEIGHT - player_attacking.height
+
+monster_list = []
+monster = Sprite('imagens/monstro.png')
+monster.set_position(WIDTH, 100)
+monster_list.append(monster)
 
 def movimento_player():
     player_idle.x = posXplayer
     player_idle.y = posYplayer
-    player_walking.x = posXplayer
-    player_walking.y = posYplayer
     player_attacking.x = posXplayer
     player_attacking.y = posYplayer
     
 def desenho_player():
-    global is_attacking, player_state
+    global player_state
     
     if player_state == 'idle':
         player_idle.update()
         player_idle.draw()
-    elif player_state == 'walking':
-        player_walking.update()
-        player_walking.draw()
     elif player_state == 'attacking':
         player_attacking.update()
         player_attacking.draw()
 
 while True:        
-    janela.set_background_color('white')
-    
-    if player_state == 'walking':
-        player_state = 'idle'
-    
+    janela.set_background_color((44, 22, 62))
+
     if teclado.key_pressed('left'):
-        if player_state != 'attacking': player_state = 'walking'
         posXplayer -= velXplayer * janela.delta_time()
     elif teclado.key_pressed('right'):
-        if player_state != 'attacking': player_state = 'walking'
         posXplayer += velXplayer * janela.delta_time()
-    if teclado.key_pressed('up'):
-        if player_state != 'attacking': player_state = 'walking'
-        posYplayer -= velYplayer * janela.delta_time()
-    elif teclado.key_pressed('down'):
-        if player_state != 'attacking': player_state = 'walking'
-        posYplayer += velYplayer * janela.delta_time()    
 
-    running_time = janela.time_elapsed()
-    if teclado.key_pressed('space') and running_time - start_attack_timer > 500:
+    if posXplayer < 0:
+        posXplayer = 0
+    if posXplayer > WIDTH - player_idle.width:
+        posXplayer = WIDTH - player_idle.width
+        
+    if teclado.key_pressed('space') and player_state != 'attacking' and posYplayer <= 0:
         player_state = 'attacking'
         player_attacking.play()
-        start_attack_timer = running_time
+    
+    if player_state == 'attacking':   
+        if posYplayer < posYdash:
+            posYplayer += velYdash * janela.delta_time()
+        if posYplayer > posYdash:
+            posYplayer = posYdash    
             
-    if player_state == 'attacking':
-        if running_time - start_attack_timer > 500:
+        for monster in monster_list:
+            if player_attacking.collided(monster):
+                monster_list.remove(monster)
+                player_state = 'idle'
+                player_attacking.stop()
+                break
+                                
+        if not player_attacking.is_playing():
             player_state = 'idle'
             player_attacking.stop()
 
+    if player_state == 'idle' and posYplayer > 0:
+        posYplayer -= 1000 * janela.delta_time()
+        if posYplayer < 0:
+            posYplayer = 0
+    
+    for monster in monster_list:
+        monster.draw()
+    
     movimento_player()
     desenho_player()
 

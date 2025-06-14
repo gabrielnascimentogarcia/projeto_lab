@@ -32,7 +32,7 @@ while running:
     botao_iniciar.set_position(botao_x, botao_y)
     botao_iniciar.draw()
 
-    # Instruções extras
+    # Instruções extras11
     window.draw_text(
         "Gabriel França & Gabriel Garcia",
         WIDTH // 2 - 160, HEIGHT - 60,

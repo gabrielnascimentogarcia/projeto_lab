@@ -19,7 +19,7 @@ posYdash = HEIGHT - player_attacking.height
 
 monster_list = []
 monster = Sprite('imagens/monstro.png')
-monster.set_position(WIDTH/2, 200)
+monster.set_position(WIDTH, 100)
 monster_list.append(monster)
 
 def movimento_player():
@@ -45,6 +45,11 @@ while True:
         posXplayer -= velXplayer * janela.delta_time()
     elif teclado.key_pressed('right'):
         posXplayer += velXplayer * janela.delta_time()
+
+    if posXplayer < 0:
+        posXplayer = 0
+    if posXplayer > WIDTH - player_idle.width:
+        posXplayer = WIDTH - player_idle.width
         
     if teclado.key_pressed('space') and player_state != 'attacking' and posYplayer <= 0:
         player_state = 'attacking'

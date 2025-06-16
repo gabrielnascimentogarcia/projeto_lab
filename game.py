@@ -8,8 +8,8 @@ from game_objects.bat import Bat
 import random
 
 class Game:
-    def __init__(self):
-        self.window = Window(WIDTH, HEIGHT)
+    def __init__(self, window):
+        self.window = window
         self.keyboard = self.window.get_keyboard()
         
         self.player = Player()
@@ -57,7 +57,3 @@ class Game:
             self.window.draw_text(f"level: {self.player.level}", 0, 15, 15, 'white')
 
             self.window.update()
-
-if __name__ == "__main__":
-    game = Game()
-    game.run()

@@ -59,7 +59,7 @@ class GameManager:
         # Verificação de input para iniciar o jogo
         if self._check_menu_input():
             self.current_state = "game"
-            self.game = Game()
+            self.game = Game(self.window)
             
     def _check_menu_input(self):
         """Verifica se o jogador quer iniciar o jogo"""
@@ -71,12 +71,16 @@ class GameManager:
             
     def run_game(self):
         """Atualiza e renderiza o estado do jogo"""
+
         # Verificação de retorno ao menu
         if self.keyboard.key_pressed("ESC"):
             self.current_state = "menu"
             self.game = None
             return
-            
+        
+        if self.game is None:
+            return
+        
         # Atualização do estado do jogo
         self.window.set_background_color((44, 22, 62))
         delta_time = self.window.delta_time()
@@ -97,6 +101,9 @@ class GameManager:
         self._draw_hud()
         
     def _draw_hud(self):
+        if self.game is None:
+            return
+        
         """Renderiza a interface do jogador"""
         self.window.draw_text(f"XP: {self.game.player.current_xp}", 0, 0, 15, 'white')
         self.window.draw_text(f"level: {self.game.player.level}", 0, 15, 15, 'white')

@@ -2,7 +2,6 @@
 from PPlay.sprite import *
 from PPlay.animation import *
 from settings import *
-import math # Ainda necessário se você usar o Player para algo com math
 
 class Player:
     def __init__(self):
@@ -20,14 +19,18 @@ class Player:
         self.dash_target_y = 0 
         self.space_pressed = False
         
+        self.current_xp = 0
+        self.level = 1
+        self.attribute_points = 0
+
     def _handle_idle_movement(self, delta_time, keyboard):
         if keyboard.key_pressed('left'):
             self.posXplayer -= PLAYER_SPEED * delta_time
         elif keyboard.key_pressed('right'):
             self.posXplayer += PLAYER_SPEED * delta_time
-            
+
         self.posXplayer = max(0, min(self.posXplayer, WIDTH - self.player_idle.width))
-        
+
         if keyboard.key_pressed('space'):
             if not self.space_pressed and not self.dash_active and self.posYplayer <= 0:
                 self.player_state = 'attacking'
@@ -47,9 +50,10 @@ class Player:
                 
         for bat in bats[:]: 
             if bat.can_collide() and self.player_attacking.collided(bat.fly_animation):
-                bat.take_damage()
-                if bat.is_dead():
+                died = bat.take_damage()
+                if died:
                     bat_killed = True 
+                    self._gain_xp(BAT_XP)
                 self.dash_active = False
                 self.player_state = 'idle'
                 self.player_attacking.stop()
@@ -59,6 +63,7 @@ class Player:
             self.dash_active = False
             self.player_state = 'idle'
             self.player_attacking.stop()
+            
         return bat_killed
             
     def _return_to_top(self, delta_time):
@@ -99,3 +104,14 @@ class Player:
             self.player_idle.draw()
         elif self.player_state == 'attacking':
             self.player_attacking.draw()
+            
+    def _gain_xp(self, amount):
+        self.current_xp += amount
+        XP_TO_LEVEL_UP = XP_BASE * (FACTOR ** self.level - 1)
+        while self.current_xp >=  XP_TO_LEVEL_UP:
+            self.current_xp -= XP_TO_LEVEL_UP
+            self._level_up()
+            
+    def _level_up(self):
+        self.level += 1
+        self.attribute_points += 1

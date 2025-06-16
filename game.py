@@ -12,7 +12,7 @@ class Game:
         self.window = Window(WIDTH, HEIGHT)
         self.keyboard = self.window.get_keyboard()
         
-        self.player = Player() 
+        self.player = Player()
         self.bat_list = []
         self.spawn_timer = 0
         self.spawn_delay = MIN_SPAWN_DELAY
@@ -37,7 +37,7 @@ class Game:
                 
     def draw_bats(self):
         for bat in self.bat_list:
-            bat.draw()
+            bat.draw()   
             
     def run(self):
         while True:
@@ -52,6 +52,9 @@ class Game:
             
             self.player.draw() 
             self.draw_bats() 
+
+            self.window.draw_text(f"XP: {self.player.current_xp}", 0, 0, 15, 'white')
+            self.window.draw_text(f"level: {self.player.level}", 0, 15, 15, 'white')
 
             self.window.update()
 

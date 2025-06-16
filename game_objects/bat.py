@@ -53,12 +53,14 @@ class Bat:
             self.hurt_animation.update()
             if not self.hurt_animation.is_playing():
                 self.state = 'flying'
+                self.hurt_animation.stop()
                 
         elif self.state == 'dying':
             self.die_animation.update()
             if not self.die_animation.is_playing() and not self.death_complete:
                 self.state = 'dead'
                 self.death_complete = True
+                self.die_animation.stop()
                 
     def draw(self):
         if self.state == 'flying':
@@ -75,6 +77,8 @@ class Bat:
             self.hit_count += 1
             if self.hit_count >= BAT_HITS_TO_DIE:
                 self.die()
+                return True
+        return False
             
     def die(self):
         if self.state != 'dead' and not self.death_complete:

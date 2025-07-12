@@ -54,49 +54,49 @@ class Player:
             self.space_pressed = False
 
     def _handle_dash_movement(self, delta_time, bats):
-        """Gerencia o movimento e colisões durante o dash"""
-        bat_killed = False
+        self._move_dash(delta_time)
+        if self.player_state == 'attacking' and self.dash_active:
+            self._check_dash_collisions(bats)
+        if self.posYplayer >= self.dash_target_y and self.dash_active: 
+            self._end_dash()
+
+    def _move_dash(self, delta_time):
+        """Move o player durante o dash"""
         if self.posYplayer < self.dash_target_y:
             self.posYplayer += PLAYER_DASH_SPEED * delta_time
             if self.posYplayer > self.dash_target_y:
                 self.posYplayer = self.dash_target_y
-                
-        # Só verifica colisão se o player estiver realmente atacando e em movimento
-        if self.player_state == 'attacking' and self.dash_active:
-            # Atualiza a posição do sprite de ataque
-            self.player_attacking.set_position(self.posXplayer, self.posYplayer)
-            
-            # Define a área de colisão da espada
-            sword_width = 100  # Largura da área de colisão da espada
-            sword_height = 50  # Altura da área de colisão da espada
-            
-            for bat in bats[:]: 
-                if bat.can_collide():
-                    bat_x = bat.fly_animation.x
-                    bat_y = bat.fly_animation.y
-                    
-                    # Verifica se o morcego está dentro da área da espada
-                    if (abs(self.posXplayer - bat_x) < sword_width and 
-                        abs(self.posYplayer - bat_y) < sword_height):
-                        
-                        # Só então verifica a colisão perfeita
-                        if self.player_attacking.collided_perfect(bat.fly_animation):
-                            died = bat.take_damage()
-                            if died:
-                                bat_killed = True 
-                                self._gain_xp(BAT_XP)
-                            self.dash_active = False
-                            self.player_state = 'idle'
-                            self.player_attacking.stop()
-                            break 
-                
-        if self.posYplayer >= self.dash_target_y and self.dash_active: 
-            self.dash_active = False
-            self.player_state = 'idle'
-            self.player_attacking.stop()
-            
-        return bat_killed
-            
+
+    def _check_dash_collisions(self, bats):
+        """Verifica colisão do dash com os morcegos"""
+        self.player_attacking.set_position(self.posXplayer, self.posYplayer)
+        sword_width = 100
+        sword_height = 50
+        for bat in bats[:]:
+            if self._process_bat_collision(bat, sword_width, sword_height):
+                break
+
+    def _process_bat_collision(self, bat, sword_width, sword_height):
+        """Processa colisão e dano em um morcego durante o dash"""
+        if bat.can_collide():
+            bat_x = bat.fly_animation.x
+            bat_y = bat.fly_animation.y
+            if (abs(self.posXplayer - bat_x) < sword_width and 
+                abs(self.posYplayer - bat_y) < sword_height):
+                if self.player_attacking.collided_perfect(bat.fly_animation):
+                    bat_died = bat.take_damage()
+                    if bat_died:
+                        self._gain_xp(BAT_XP)
+                    self._end_dash()
+                    return True
+        return False
+
+    def _end_dash(self):
+        """Finaliza o dash e reseta estado"""
+        self.dash_active = False
+        self.player_state = 'idle'
+        self.player_attacking.stop()
+
     def _return_to_top(self, delta_time):
         """Retorna o player para o topo da tela após o dash"""
         if self.posYplayer > 0:
@@ -145,10 +145,9 @@ class Player:
         self.current_xp += amount
         XP_TO_LEVEL_UP = XP_BASE * (FACTOR ** self.level - 1)
         while self.current_xp >= XP_TO_LEVEL_UP:
-            self.current_xp -= XP_TO_LEVEL_UP
-            self._level_up()
-            
-    def _level_up(self):
-        """Aumenta o level e adiciona pontos de atributo"""
+            self._level_up(XP_TO_LEVEL_UP)
+    
+    def _level_up(self, XP_TO_LEVEL_UP):
+        self.current_xp -= XP_TO_LEVEL_UP
         self.level += 1
         self.attribute_points += 1

@@ -13,7 +13,7 @@ class GameManager:
         self.keyboard = self.window.get_keyboard()
         self.game = Game(self.window)
         self.main_menu = MainMenu(self.window)        
-        self.attributes_screen = AttributesScreen(self.window)
+        self.attributes_screen = AttributesScreen(self.window, self.game.player)
         self.current_state = "main_menu"
             
     def change_current_state(self):
@@ -23,6 +23,7 @@ class GameManager:
                 
         elif self.current_state == "gameplay":
             if self.game.player.check_level_up():
+                self.attributes_screen.points_to_spend = self.game.player.attribute_points
                 self.current_state = "attributes_screen"
             if self.game.exit():
                 self.current_state = "main_menu"
@@ -41,3 +42,4 @@ class GameManager:
             if self.current_state == "attributes_screen":
                 self.attributes_screen.run()
             self.window.update()
+

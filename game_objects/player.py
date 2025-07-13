@@ -31,6 +31,11 @@ class Player:
         self.level = 1
         self.attribute_points = 0
         
+        self.sword_strength = 0
+        self.attack_speed_bonus = 0
+        self.boot_speed_bonus = 0
+        self.sword_range_bonus = 0
+        self.shield_resistance = 0
 
     def _handle_idle_movement(self, delta_time, keyboard):
         # Movimento horizontal

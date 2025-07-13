@@ -6,10 +6,11 @@ from settings import *
 from PPlay.sprite import *
 
 class AttributesScreen:
-    def __init__(self, window):
+    def __init__(self, window, player):
         self.window = window
         self.fundo = GameImage("imagens/tela_atributos/fundo_atributos.png")
         self.painel = GameImage("imagens/tela_atributos/painel_atributos.png")
+        self.player = player
         self.icones = [
             Sprite("imagens/tela_atributos/icone_forca.png"),
             Sprite("imagens/tela_atributos/icone_ataque.png"),
@@ -22,12 +23,13 @@ class AttributesScreen:
         self.painel_x = (WIDTH - self.painel.width) // 2
         self.painel_y = (HEIGHT - self.painel.height) // 2
         self.atributos = [
-            ("Força da Espada", 0),
-            ("Velocidade de Ataque", 1),
-            ("Velocidade das Botas", 2),
-            ("Alcance da Espada", 3),
-            ("Resistência do Escudo", 4)
+            ("Força da Espada", "sword_strength"),
+            ("Velocidade de Ataque", "attack_speed_bonus"),
+            ("Velocidade das Botas", "boot_speed_bonus"),
+            ("Alcance da Espada", "sword_range_bonus"),
+            ("Resistência do Escudo", "shield_resistance")
         ]
+         
         self.num_atributos = len(self.atributos)
         self.espaco_top = 60
         self.espaco_bottom = 120
@@ -42,6 +44,10 @@ class AttributesScreen:
 
         self.keyboard = self.window.get_keyboard()
         self.mouse = self.window.get_mouse()
+        
+        self.temp_attribute_increases = [0] * self.num_atributos
+        self.points_to_spend = self.player.attribute_points
+        
         self.valores = [0 for _ in self.atributos]
         self.mouse_was_pressed = False
 
@@ -53,15 +59,21 @@ class AttributesScreen:
         self.fundo.draw()
         self.painel.draw()
         self.botao_confirmar.draw()
+        self.window.draw_text(f"Pontos: {self.points_to_spend}", self.painel_x + 32, self.painel_y + self.painel.height - 70, size=20, color=(255,255,255), font_name="Arial", bold=True)
+
 
     def _draw_atributos(self, mouse_x, mouse_y, is_mouse_clicking):
-        for i, (nome, idx) in enumerate(self.atributos):
+        for i, (nome_display, attr_name) in enumerate(self.atributos):
             y = self.painel_y + self.espaco_top + i * self.linha_espaco
-            icon = self.icones[idx]
+            icon = self.icones[i]
             icon.set_position(self.painel_x + self.icone_offset_x, y + (self.linha_espaco - icon.height)//2)
             icon.draw()
-            self.window.draw_text(nome, self.painel_x + self.texto_offset_x, y + (self.linha_espaco - 16)//2, size=16, color=(255,255,255), font_name="Arial", bold=True)
-            self.window.draw_text(str(self.valores[i]), self.painel_x + self.valor_offset_x, y + (self.linha_espaco - 28)//2, size=28, color=(255,255,255), font_name="Arial", bold=True)
+            
+            current_attr_value = getattr(self.player, attr_name)
+            displayed_value = current_attr_value + self.temp_attribute_increases[i]
+            
+            self.window.draw_text(nome_display, self.painel_x + self.texto_offset_x, y + (self.linha_espaco - 16)//2, size=16, color=(255,255,255), font_name="Arial", bold=True)
+            self.window.draw_text(str(displayed_value), self.painel_x + self.valor_offset_x, y + (self.linha_espaco - 28)//2, size=28, color=(255,255,255), font_name="Arial", bold=True)
             self._handle_botao_mais(i, y, mouse_x, mouse_y, is_mouse_clicking)
 
     def _handle_botao_mais(self, i, y, mouse_x, mouse_y, is_mouse_clicking):
@@ -70,13 +82,25 @@ class AttributesScreen:
         self.botao_mais.set_position(bx, by)
         self.botao_mais.draw()
         mouse_over_mais = bx <= mouse_x <= bx + self.botao_mais.width and by <= mouse_y <= by + self.botao_mais.height
+        
         if is_mouse_clicking and mouse_over_mais and not self.mouse_was_pressed:
-            self.valores[i] += 1
+            if self.points_to_spend > 0:
+                self.temp_attribute_increases[i] += 1
+                self.points_to_spend -= 1
             self.mouse_was_pressed = True
 
     def _handle_confirmar(self):
-        if self.mouse.is_over_object(self.botao_confirmar) and self.mouse.is_button_pressed(1):
+        if self.mouse.is_over_object(self.botao_confirmar) and self.mouse.is_button_pressed(1) and not self.mouse_was_pressed:
+            for i, (nome_display, attr_name) in enumerate(self.atributos):
+                current_value = getattr(self.player, attr_name)
+                setattr(self.player, attr_name, current_value + self.temp_attribute_increases[i])
+            
+            self.player.attribute_points = self.points_to_spend
+            
+            self.temp_attribute_increases = [0] * self.num_atributos
+            self.mouse_was_pressed = True
             return True
+        return False
         
     def _reset_mouse(self, is_mouse_clicking):
         if not is_mouse_clicking:

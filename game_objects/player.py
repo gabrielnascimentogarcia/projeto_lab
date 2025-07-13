@@ -39,10 +39,11 @@ class Player:
 
     def _handle_idle_movement(self, delta_time, keyboard):
         # Movimento horizontal
+        player_speed = PLAYER_SPEED * (1 + self.boot_speed_bonus * 0.1) * delta_time
         if keyboard.key_pressed('left'):
-            self.posXplayer -= PLAYER_SPEED * delta_time
+            self.posXplayer -= player_speed
         elif keyboard.key_pressed('right'):
-            self.posXplayer += PLAYER_SPEED * delta_time
+            self.posXplayer += player_speed
 
         # Limita o movimento dentro da tela
         self.posXplayer = max(0, min(self.posXplayer, WIDTH - self.player_idle.width))
@@ -68,15 +69,16 @@ class Player:
     def _move_dash(self, delta_time):
         """Move o player durante o dash"""
         if self.posYplayer < self.dash_target_y:
-            self.posYplayer += PLAYER_DASH_SPEED * delta_time
+            dash_speed = PLAYER_DASH_SPEED * (1 + self.attack_speed_bonus * 0.2)
+            self.posYplayer += dash_speed * delta_time
             if self.posYplayer > self.dash_target_y:
                 self.posYplayer = self.dash_target_y
 
     def _check_dash_collisions(self, bats):
         """Verifica colisão do dash com os morcegos"""
         self.player_attacking.set_position(self.posXplayer, self.posYplayer)
-        sword_width = 100
-        sword_height = 50
+        sword_width = 100 * (1 + self.sword_range_bonus * 0.3)
+        sword_height = 50 * (1 + self.sword_range_bonus * 0.3)
         for bat in bats[:]:
             if self._process_bat_collision(bat, sword_width, sword_height):
                 break

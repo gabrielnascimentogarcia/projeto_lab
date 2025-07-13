@@ -3,23 +3,22 @@ from PPlay.gameimage import *
 from PPlay.mouse import *
 from PPlay.keyboard import *
 from settings import *
+from PPlay.sprite import *
 
-# --- Configurações Iniciais (sem alterações) ---
-
-class TelaAtributos:
+class AttributesScreen:
     def __init__(self, window):
         self.window = window
-        self.fundo = GameImage("imagens/fundo_atributos.png")
-        self.painel = GameImage("imagens/painel_atributos.png")
+        self.fundo = GameImage("imagens/tela_atributos/fundo_atributos.png")
+        self.painel = GameImage("imagens/tela_atributos/painel_atributos.png")
         self.icones = [
-            GameImage("imagens/icone_forca.png"),
-            GameImage("imagens/icone_ataque.png"),
-            GameImage("imagens/icone_botas.png"),
-            GameImage("imagens/icone_espada_alcance.png"),
-            GameImage("imagens/icone_escudo.png")
+            Sprite("imagens/tela_atributos/icone_forca.png"),
+            Sprite("imagens/tela_atributos/icone_ataque.png"),
+            Sprite("imagens/tela_atributos/icone_botas.png"),
+            Sprite("imagens/tela_atributos/icone_espada_alcance.png"),
+            Sprite("imagens/tela_atributos/icone_escudo.png")
         ]
-        self.botao_mais = GameImage("imagens/botao_mais.png")
-        self.botao_confirmar = GameImage("imagens/botao_confirmar.png")
+        self.botao_mais = Sprite("imagens/tela_atributos/botao_mais.png")
+        self.botao_confirmar = Sprite("imagens/tela_atributos/botao_confirmar.png")
         self.painel_x = (WIDTH - self.painel.width) // 2
         self.painel_y = (HEIGHT - self.painel.height) // 2
         self.atributos = [
@@ -50,41 +49,44 @@ class TelaAtributos:
         self.painel.set_position(self.painel_x, self.painel_y)
         self.botao_confirmar.set_position(self.confirmar_x, self.confirmar_y)
 
-    def run(self):
-        mouse_x, mouse_y = self.mouse.get_position()
-        is_mouse_clicking = self.mouse.is_button_pressed(1)
-
+    def _draw_base(self):
         self.fundo.draw()
         self.painel.draw()
         self.botao_confirmar.draw()
 
+    def _draw_atributos(self, mouse_x, mouse_y, is_mouse_clicking):
         for i, (nome, idx) in enumerate(self.atributos):
             y = self.painel_y + self.espaco_top + i * self.linha_espaco
             icon = self.icones[idx]
-            
             icon.set_position(self.painel_x + self.icone_offset_x, y + (self.linha_espaco - icon.height)//2)
             icon.draw()
-            
             self.window.draw_text(nome, self.painel_x + self.texto_offset_x, y + (self.linha_espaco - 16)//2, size=16, color=(255,255,255), font_name="Arial", bold=True)
             self.window.draw_text(str(self.valores[i]), self.painel_x + self.valor_offset_x, y + (self.linha_espaco - 28)//2, size=28, color=(255,255,255), font_name="Arial", bold=True)
-            
-            bx = self.painel_x + self.botao_offset_x
-            by = y + (self.linha_espaco - self.botao_mais.height)//2
-            self.botao_mais.set_position(bx, by)
-            self.botao_mais.draw()
+            self._handle_botao_mais(i, y, mouse_x, mouse_y, is_mouse_clicking)
 
-            mouse_over_mais = bx <= mouse_x <= bx + self.botao_mais.width and by <= mouse_y <= by + self.botao_mais.height
-            if is_mouse_clicking and mouse_over_mais and not self.mouse_was_pressed:
-                self.valores[i] += 1
-                self.mouse_was_pressed = True
+    def _handle_botao_mais(self, i, y, mouse_x, mouse_y, is_mouse_clicking):
+        bx = self.painel_x + self.botao_offset_x
+        by = y + (self.linha_espaco - self.botao_mais.height)//2
+        self.botao_mais.set_position(bx, by)
+        self.botao_mais.draw()
+        mouse_over_mais = bx <= mouse_x <= bx + self.botao_mais.width and by <= mouse_y <= by + self.botao_mais.height
+        if is_mouse_clicking and mouse_over_mais and not self.mouse_was_pressed:
+            self.valores[i] += 1
+            self.mouse_was_pressed = True
 
-        mouse_over_confirmar = self.confirmar_x <= mouse_x <= self.confirmar_x + self.botao_confirmar.width and self.confirmar_y <= mouse_y <= self.confirmar_y + self.botao_confirmar.height
+    def _handle_confirmar(self):
+        if self.mouse.is_over_object(self.botao_confirmar) and self.mouse.is_button_pressed(1):
+            return True
         
-        if is_mouse_clicking and mouse_over_confirmar and not self.mouse_was_pressed:
-            running = False
-            
-        if self.keyboard.key_pressed("ENTER"):
-            running = False
-
+    def _reset_mouse(self, is_mouse_clicking):
         if not is_mouse_clicking:
             self.mouse_was_pressed = False
+            
+    def run(self):
+        mouse_x, mouse_y = self.mouse.get_position()
+        is_mouse_clicking = self.mouse.is_button_pressed(1)
+
+        self._draw_base()
+        self._draw_atributos(mouse_x, mouse_y, is_mouse_clicking)
+        self._handle_confirmar()
+        self._reset_mouse(is_mouse_clicking)

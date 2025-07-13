@@ -1,7 +1,7 @@
 from PPlay.window import Window
 from game import Game
-from menu import MainMenu
-from tela_atributos import TelaAtributos
+from main_menu import MainMenu
+from attributes_screen import AttributesScreen
 from settings import WIDTH, HEIGHT
 
 class GameManager:
@@ -13,22 +13,31 @@ class GameManager:
         self.keyboard = self.window.get_keyboard()
         self.game = Game(self.window)
         self.main_menu = MainMenu(self.window)        
-        self.tela_atributos = TelaAtributos(self.window)
+        self.attributes_screen = AttributesScreen(self.window)
         self.current_state = "main_menu"
             
     def change_current_state(self):
         if self.current_state == "main_menu":
             if self.main_menu.button_clicked():
                 self.current_state = "gameplay" 
+                
         elif self.current_state == "gameplay":
+            if self.game.player.check_level_up():
+                self.current_state = "attributes_screen"
             if self.game.exit():
                 self.current_state = "main_menu"
-            
+                
+        elif self.current_state == "attributes_screen":
+            if self.attributes_screen._handle_confirmar():
+                self.current_state = "gameplay"
+                
     def run(self):
         while True:
             self.change_current_state()
             if self.current_state == "main_menu":
                 self.main_menu.run()
-            if self.current_state == "gameplay":
+            elif self.current_state == "gameplay":
                 self.game.run()
+            if self.current_state == "attributes_screen":
+                self.attributes_screen.run()
             self.window.update()

@@ -30,9 +30,9 @@ class Player:
         self.current_xp = 0
         self.level = 1
         self.attribute_points = 0
+        
 
     def _handle_idle_movement(self, delta_time, keyboard):
-        """Gerencia o movimento do player no estado idle"""
         # Movimento horizontal
         if keyboard.key_pressed('left'):
             self.posXplayer -= PLAYER_SPEED * delta_time
@@ -86,7 +86,7 @@ class Player:
                 if self.player_attacking.collided_perfect(bat.fly_animation):
                     bat_died = bat.take_damage()
                     if bat_died:
-                        self._gain_xp(BAT_XP)
+                        self.gain_xp(BAT_XP)
                     self._end_dash()
                     return True
         return False
@@ -103,14 +103,43 @@ class Player:
             self.posYplayer -= PLAYER_RETURN_SPEED * delta_time
             if self.posYplayer < 0:
                 self.posYplayer = 0 
+            
+    def draw(self):
+        """Renderiza o player"""
+        self.player_idle.x = self.posXplayer
+        self.player_idle.y = self.posYplayer
+        self.player_attacking.x = self.posXplayer
+        self.player_attacking.y = self.posYplayer
+        
+        if self.player_state == 'idle':
+            self.player_idle.draw()
+        elif self.player_state == 'attacking':
+            self.player_attacking.draw()
+            
+    def gain_xp(self, amount):
+        self.current_xp += amount
 
+    def level_up(self):
+        XP_TO_LEVEL_UP = XP_BASE * (FACTOR ** self.level - 1)
+        self.current_xp -= XP_TO_LEVEL_UP
+        self.level += 1
+        self.attribute_points += 1
+        
+    def check_level_up(self):
+        leveled_up = False
+        XP_TO_LEVEL_UP = XP_BASE * (FACTOR ** self.level - 1)
+        while self.current_xp >= XP_TO_LEVEL_UP:
+            self.level_up()            
+            leveled_up = True
+        return leveled_up
+            
     def _update_animations(self):
         """Atualiza as animações do player"""
         if self.player_state == 'idle':
             self.player_idle.update()
         elif self.player_state == 'attacking':
             self.player_attacking.update()
-
+            
     def update(self, delta_time, keyboard, bats):
         """Atualiza o estado do player"""
         bat_killed = False
@@ -127,27 +156,3 @@ class Player:
         self._update_animations()
 
         return bat_killed
-            
-    def draw(self):
-        """Renderiza o player"""
-        self.player_idle.x = self.posXplayer
-        self.player_idle.y = self.posYplayer
-        self.player_attacking.x = self.posXplayer
-        self.player_attacking.y = self.posYplayer
-        
-        if self.player_state == 'idle':
-            self.player_idle.draw()
-        elif self.player_state == 'attacking':
-            self.player_attacking.draw()
-            
-    def _gain_xp(self, amount):
-        """Adiciona XP e verifica level up"""
-        self.current_xp += amount
-        XP_TO_LEVEL_UP = XP_BASE * (FACTOR ** self.level - 1)
-        while self.current_xp >= XP_TO_LEVEL_UP:
-            self._level_up(XP_TO_LEVEL_UP)
-    
-    def _level_up(self, XP_TO_LEVEL_UP):
-        self.current_xp -= XP_TO_LEVEL_UP
-        self.level += 1
-        self.attribute_points += 1

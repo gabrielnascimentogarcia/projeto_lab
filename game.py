@@ -16,18 +16,23 @@ class Game:
         self.bat_list = []
         self.spawn_timer = 0
         self.spawn_delay = MIN_SPAWN_DELAY
+        self.shield_health = 3
 
     def spawn_bat(self):
         if len(self.bat_list) < MAX_BATS:
             x = random.randint(50, WIDTH - 50)
-            bat = Bat(x, HEIGHT)
+            bat = Bat(x, HEIGHT, self.player.level)
             self.bat_list.append(bat)
             
     def update_bats(self, delta_time):
         self.spawn_timer += delta_time
+        level_factor = max(1, self.player.level * 0.7)
+        adjusted_min_delay = MIN_SPAWN_DELAY / level_factor
+        adjusted_max_delay = MAX_SPAWN_DELAY / level_factor
+
         if self.spawn_timer >= self.spawn_delay:
             self.spawn_bat()
-            self.spawn_delay = MIN_SPAWN_DELAY + (MAX_SPAWN_DELAY - MIN_SPAWN_DELAY) * (len(self.bat_list) / MAX_BATS)
+            self.spawn_delay = adjusted_min_delay + (adjusted_max_delay - adjusted_min_delay) * (len(self.bat_list) / MAX_BATS)
             self.spawn_timer = 0
 
         for bat in self.bat_list[:]:
@@ -37,7 +42,6 @@ class Game:
                 self.shield_health -= 1
                 self.bat_list.remove(bat)
             
-        # Remove todos os morcegos mortos ou fora da tela
         self.bat_list = [bat for bat in self.bat_list if not bat.is_off_screen() and not bat.is_dead()]
                 
     def draw_bats(self):
@@ -67,4 +71,3 @@ class Game:
         self.update(self.window.delta_time(), self.keyboard)
         self.draw()
         self.exit()
-        

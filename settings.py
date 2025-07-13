@@ -15,12 +15,13 @@ BAT_XP = 10.0              # XP ganho por morcego morto
 # Configurações dos Morcegos
 BAT_SPEED = 150            # Velocidade horizontal
 BAT_VERTICAL_SPEED = 150   # Velocidade vertical
-BAT_OSCILLATION_SPEED = 50 # Velocidade da oscilação
+BAT_OSCILLATION_SPEED = 150 # Velocidade da oscilação
 BAT_OSCILLATION_FREQUENCY = 0.01  # Frequência da oscilação
 BAT_HITS_TO_DIE = 1        # Número de hits para matar um morcego
 MAX_BATS = 8               # Número máximo de morcegos na tela
 MIN_SPAWN_DELAY = 1.0      # Delay mínimo entre spawns
 MAX_SPAWN_DELAY = 2.0      # Delay máximo entre spawns
+BAT_HITS_TO_DIE_PER_LEVEL = 0.2
 
 # Configurações de Animação (duração em milissegundos)
 BAT_FLY_ANIMATION_DURATION = 50

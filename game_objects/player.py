@@ -77,8 +77,8 @@ class Player:
     def _check_dash_collisions(self, bats):
         """Verifica colisão do dash com os morcegos"""
         self.player_attacking.set_position(self.posXplayer, self.posYplayer)
-        sword_width = 100 * (1 + self.sword_range_bonus * 0.3)
-        sword_height = 50 * (1 + self.sword_range_bonus * 0.3)
+        sword_width = 70 * (1 + self.sword_range_bonus * 0.3)
+        sword_height = 20 * (1 + self.sword_range_bonus * 0.3)
         for bat in bats[:]:
             if self._process_bat_collision(bat, sword_width, sword_height):
                 break
@@ -91,7 +91,7 @@ class Player:
             if (abs(self.posXplayer - bat_x) < sword_width and 
                 abs(self.posYplayer - bat_y) < sword_height):
                 if self.player_attacking.collided_perfect(bat.fly_animation):
-                    bat_died = bat.take_damage()
+                    bat_died = bat.take_damage(self.sword_strength + 1)
                     if bat_died:
                         self.gain_xp(BAT_XP)
                     self._end_dash()

@@ -8,18 +8,16 @@ class MainMenu:
     def __init__(self, window) -> None:
         self.window = window
         self.mouse = window.get_mouse()
-        self.bg_image = GameImage("imagens/fundo_menu.png")
-        self.logo_image = GameImage("imagens/logo.png")
-        self.botao_iniciar = Sprite("imagens/botao_iniciar.png")
-        
-        self.logo_x = (WIDTH - self.logo_image.width) // 2
-        self.logo_y = 80
-        self.botao_x = (WIDTH - self.botao_iniciar.width) // 2
-        self.botao_y = HEIGHT - 400
-        
+        self.bg_image = GameImage("imagens/tela_inicial/fundo_menu.png")
+        self.logo_image = GameImage("imagens/tela_inicial/logo.png")
+        self.botao_iniciar = Sprite("imagens/tela_inicial/botao_iniciar.png")
+        logo_x = (WIDTH - self.logo_image.width) // 2
+        logo_y = 80
+        botao_x = (WIDTH - self.botao_iniciar.width) // 2
+        botao_y = HEIGHT - 400
         self.bg_image.set_position(0, 0)
-        self.logo_image.set_position(self.logo_x, self.logo_y)
-        self.botao_iniciar.set_position(self.botao_x, self.botao_y)
+        self.logo_image.set_position(logo_x, logo_y)
+        self.botao_iniciar.set_position(botao_x, botao_y)
 
     def draw(self):
         self.bg_image.draw()

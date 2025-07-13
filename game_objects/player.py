@@ -30,14 +30,20 @@ class Player:
         self.current_xp = 0
         self.level = 1
         self.attribute_points = 0
+        
+        self.sword_strength = 0
+        self.attack_speed_bonus = 0
+        self.boot_speed_bonus = 0
+        self.sword_range_bonus = 0
+        self.shield_resistance = 0
 
     def _handle_idle_movement(self, delta_time, keyboard):
-        """Gerencia o movimento do player no estado idle"""
         # Movimento horizontal
+        player_speed = PLAYER_SPEED * (1 + self.boot_speed_bonus * 0.1) * delta_time
         if keyboard.key_pressed('left'):
-            self.posXplayer -= PLAYER_SPEED * delta_time
+            self.posXplayer -= player_speed
         elif keyboard.key_pressed('right'):
-            self.posXplayer += PLAYER_SPEED * delta_time
+            self.posXplayer += player_speed
 
         # Limita o movimento dentro da tela
         self.posXplayer = max(0, min(self.posXplayer, WIDTH - self.player_idle.width))
@@ -63,15 +69,16 @@ class Player:
     def _move_dash(self, delta_time):
         """Move o player durante o dash"""
         if self.posYplayer < self.dash_target_y:
-            self.posYplayer += PLAYER_DASH_SPEED * delta_time
+            dash_speed = PLAYER_DASH_SPEED * (1 + self.attack_speed_bonus * 0.2)
+            self.posYplayer += dash_speed * delta_time
             if self.posYplayer > self.dash_target_y:
                 self.posYplayer = self.dash_target_y
 
     def _check_dash_collisions(self, bats):
         """Verifica colisão do dash com os morcegos"""
         self.player_attacking.set_position(self.posXplayer, self.posYplayer)
-        sword_width = 100
-        sword_height = 50
+        sword_width = 70 * (1 + self.sword_range_bonus * 0.3)
+        sword_height = 20 * (1 + self.sword_range_bonus * 0.3)
         for bat in bats[:]:
             if self._process_bat_collision(bat, sword_width, sword_height):
                 break
@@ -84,9 +91,9 @@ class Player:
             if (abs(self.posXplayer - bat_x) < sword_width and 
                 abs(self.posYplayer - bat_y) < sword_height):
                 if self.player_attacking.collided_perfect(bat.fly_animation):
-                    bat_died = bat.take_damage()
+                    bat_died = bat.take_damage(self.sword_strength + 1)
                     if bat_died:
-                        self._gain_xp(BAT_XP)
+                        self.gain_xp(BAT_XP)
                     self._end_dash()
                     return True
         return False
@@ -103,14 +110,43 @@ class Player:
             self.posYplayer -= PLAYER_RETURN_SPEED * delta_time
             if self.posYplayer < 0:
                 self.posYplayer = 0 
+            
+    def draw(self):
+        """Renderiza o player"""
+        self.player_idle.x = self.posXplayer
+        self.player_idle.y = self.posYplayer
+        self.player_attacking.x = self.posXplayer
+        self.player_attacking.y = self.posYplayer
+        
+        if self.player_state == 'idle':
+            self.player_idle.draw()
+        elif self.player_state == 'attacking':
+            self.player_attacking.draw()
+            
+    def gain_xp(self, amount):
+        self.current_xp += amount
 
+    def level_up(self):
+        XP_TO_LEVEL_UP = XP_BASE * (FACTOR ** self.level - 1)
+        self.current_xp -= XP_TO_LEVEL_UP
+        self.level += 1
+        self.attribute_points += 1
+        
+    def check_level_up(self):
+        leveled_up = False
+        XP_TO_LEVEL_UP = XP_BASE * (FACTOR ** self.level - 1)
+        while self.current_xp >= XP_TO_LEVEL_UP:
+            self.level_up()            
+            leveled_up = True
+        return leveled_up
+            
     def _update_animations(self):
         """Atualiza as animações do player"""
         if self.player_state == 'idle':
             self.player_idle.update()
         elif self.player_state == 'attacking':
             self.player_attacking.update()
-
+            
     def update(self, delta_time, keyboard, bats):
         """Atualiza o estado do player"""
         bat_killed = False
@@ -127,27 +163,3 @@ class Player:
         self._update_animations()
 
         return bat_killed
-            
-    def draw(self):
-        """Renderiza o player"""
-        self.player_idle.x = self.posXplayer
-        self.player_idle.y = self.posYplayer
-        self.player_attacking.x = self.posXplayer
-        self.player_attacking.y = self.posYplayer
-        
-        if self.player_state == 'idle':
-            self.player_idle.draw()
-        elif self.player_state == 'attacking':
-            self.player_attacking.draw()
-            
-    def _gain_xp(self, amount):
-        """Adiciona XP e verifica level up"""
-        self.current_xp += amount
-        XP_TO_LEVEL_UP = XP_BASE * (FACTOR ** self.level - 1)
-        while self.current_xp >= XP_TO_LEVEL_UP:
-            self._level_up(XP_TO_LEVEL_UP)
-    
-    def _level_up(self, XP_TO_LEVEL_UP):
-        self.current_xp -= XP_TO_LEVEL_UP
-        self.level += 1
-        self.attribute_points += 1

@@ -16,47 +16,56 @@ class Game:
         self.bat_list = []
         self.spawn_timer = 0
         self.spawn_delay = MIN_SPAWN_DELAY
-        
+        self.shield_health = 3
+
     def spawn_bat(self):
         if len(self.bat_list) < MAX_BATS:
             x = random.randint(50, WIDTH - 50)
-            bat = Bat(x, HEIGHT)
+            bat = Bat(x, HEIGHT, self.player.level)
             self.bat_list.append(bat)
-                
+            
     def update_bats(self, delta_time):
         self.spawn_timer += delta_time
+        level_factor = max(1, self.player.level * 0.7)
+        adjusted_min_delay = MIN_SPAWN_DELAY / level_factor
+        adjusted_max_delay = MAX_SPAWN_DELAY / level_factor
+
         if self.spawn_timer >= self.spawn_delay:
             self.spawn_bat()
-            self.spawn_delay = MIN_SPAWN_DELAY + (MAX_SPAWN_DELAY - MIN_SPAWN_DELAY) * (len(self.bat_list) / MAX_BATS)
+            self.spawn_delay = adjusted_min_delay + (adjusted_max_delay - adjusted_min_delay) * (len(self.bat_list) / MAX_BATS)
             self.spawn_timer = 0
 
         for bat in self.bat_list[:]:
             bat.update(delta_time)
-        # Remove todos os morcegos mortos ou fora da tela
+            
+            if bat.is_off_screen() and not bat.is_dead():            
+                self.shield_health -= 1
+                self.bat_list.remove(bat)
+            
         self.bat_list = [bat for bat in self.bat_list if not bat.is_off_screen() and not bat.is_dead()]
                 
     def draw_bats(self):
         for bat in self.bat_list:
-            bat.draw()   
+            bat.draw()  
             
-    def update(self, delta_time, keyboard):
-        """Atualiza o estado do jogo"""
-        self.player.update(delta_time, keyboard, self.bat_list)
-        self.update_bats(delta_time)
-
     def draw(self):
         self.player.draw()
         self.draw_bats()
         self.window.draw_text(f"XP: {self.player.current_xp}", 0, 0, 15, 'white')
         self.window.draw_text(f"level: {self.player.level}", 0, 15, 15, 'white')
-        dt = self.window.delta_time()
-        fps = round(1/dt) if dt > 0 else 0
-        self.window.draw_text(f"fps: {fps}", 0, 30, 15, 'white')
+        if self.window.delta_time() > 0:
+            fps = round(1/self.window.delta_time()) 
+            self.window.draw_text(f"fps: {fps}", 0, 30, 15, 'white')
 
+    def update(self, delta_time, keyboard):
+        """Atualiza o estado do jogo"""
+        self.player.update(delta_time, keyboard, self.bat_list)
+        self.update_bats(delta_time)
+        
     def exit(self):
         if self.keyboard.key_pressed("ESC"):
             return True
-
+    
     def run(self):
         self.window.set_background_color((44, 22, 62))
         self.update(self.window.delta_time(), self.keyboard)

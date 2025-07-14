@@ -28,6 +28,7 @@ class Player:
         self.dash_active = False
         self.dash_target_y = 0 
         self.space_pressed = False
+        self.shield_health = 2
         
         # Sistema de progressão
         self.current_xp = 0
@@ -38,8 +39,8 @@ class Player:
         self.attack_speed_bonus = 0
         self.boot_speed_bonus = 0
         self.sword_range_bonus = 0
-        self.shield_resistance = 0
-
+        self.shield_resistance_bonus = 0
+        
     def _handle_idle_movement(self, delta_time, keyboard):
         # Movimento horizontal
         player_speed = PLAYER_SPEED * (1 + self.boot_speed_bonus * 0.1) * delta_time
@@ -135,7 +136,6 @@ class Player:
         self.current_xp -= XP_TO_LEVEL_UP
         self.level += 1
         self.attribute_points += 1
-        # Removido: self.sound_manager.play_player_levelup()
 
     def check_level_up(self):
         leveled_up = False

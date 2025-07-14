@@ -6,6 +6,7 @@ PLAYER_SPEED = 300          # Velocidade de movimento horizontal
 PLAYER_DASH_SPEED = 2000    # Velocidade do dash
 PLAYER_RETURN_SPEED = 3000  # Velocidade de retorno após o dash
 PLAYER_START_X = WIDTH // 3 # Posição inicial X do player
+PLAYER_BASE_HEALTH = 2
 
 # Sistema de XP e Level
 XP_BASE = 100              # XP base necessária para o primeiro level

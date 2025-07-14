@@ -68,6 +68,9 @@ class SoundManager:
             self.gameplay_music.play()
             self.current_music = "gameplay"
             
+    def stop_gameplay_music(self):
+        self.gameplay_music.stop()        
+    
     def stop_all_music(self):
         """Para todas as músicas"""
         self.menu_music.stop()

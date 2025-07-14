@@ -28,7 +28,7 @@ class AttributesScreen:
             ("Velocidade de Ataque", "attack_speed_bonus"),
             ("Velocidade das Botas", "boot_speed_bonus"),
             ("Alcance da Espada", "sword_range_bonus"),
-            ("Resistência do Escudo", "shield_resistance")
+            ("Resistência do Escudo", "shield_resistance_bonus")
         ]
          
         self.num_atributos = len(self.atributos)
@@ -100,6 +100,9 @@ class AttributesScreen:
             self.temp_attribute_increases = [0] * self.num_atributos
             self.mouse_was_pressed = True
             self.sound_manager.play_atributo_confirm()
+            
+            self.player.shield_health = PLAYER_BASE_HEALTH + self.player.shield_resistance_bonus
+            
             return True
         return False
         

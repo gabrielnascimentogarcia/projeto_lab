@@ -8,20 +8,22 @@ from game_objects.bat import Bat
 import random
 
 class Game:
-    def __init__(self, window):
+    def __init__(self, window, sound_manager):
         self.window = window
         self.keyboard = self.window.get_keyboard()
+        self.sound_manager = sound_manager
         
-        self.player = Player()
+        self.player = Player(sound_manager)
         self.bat_list = []
         self.spawn_timer = 0
         self.spawn_delay = MIN_SPAWN_DELAY
         self.shield_health = 3
+        self.game_over = False
 
     def spawn_bat(self):
         if len(self.bat_list) < MAX_BATS:
             x = random.randint(50, WIDTH - 50)
-            bat = Bat(x, HEIGHT, self.player.level)
+            bat = Bat(x, HEIGHT, self.player.level, self.sound_manager)
             self.bat_list.append(bat)
             
     def update_bats(self, delta_time):
@@ -40,6 +42,11 @@ class Game:
             
             if bat.is_off_screen() and not bat.is_dead():            
                 self.shield_health -= 1
+                if self.shield_health <= 0:
+                    self.sound_manager.play_game_over()
+                    self.game_over = True
+                else:
+                    self.sound_manager.play_player_hurt()
                 self.bat_list.remove(bat)
             
         self.bat_list = [bat for bat in self.bat_list if not bat.is_off_screen() and not bat.is_dead()]
@@ -53,14 +60,29 @@ class Game:
         self.draw_bats()
         self.window.draw_text(f"XP: {self.player.current_xp}", 0, 0, 15, 'white')
         self.window.draw_text(f"level: {self.player.level}", 0, 15, 15, 'white')
+        self.window.draw_text(f"Shield: {self.shield_health}", 0, 30, 15, 'white')
         if self.window.delta_time() > 0:
             fps = round(1/self.window.delta_time()) 
-            self.window.draw_text(f"fps: {fps}", 0, 30, 15, 'white')
+            self.window.draw_text(f"fps: {fps}", 0, 45, 15, 'white')
+            
+        # Desenha a tela de game over
+        if self.game_over:
+            self._draw_game_over()
 
     def update(self, delta_time, keyboard):
         """Atualiza o estado do jogo"""
-        self.player.update(delta_time, keyboard, self.bat_list)
-        self.update_bats(delta_time)
+        if not self.game_over:
+            self.player.update(delta_time, keyboard, self.bat_list)
+            self.update_bats(delta_time)
+        
+    def _draw_game_over(self):
+        # Exibe a imagem de game over centralizada
+        from PPlay.gameimage import GameImage
+        game_over_img = GameImage("imagens/tela_game/game_over.png")
+        x = (WIDTH - game_over_img.width) // 2
+        y = (HEIGHT - game_over_img.height) // 2
+        game_over_img.set_position(x, y)
+        game_over_img.draw()
         
     def exit(self):
         if self.keyboard.key_pressed("ESC"):

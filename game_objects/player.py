@@ -8,13 +8,16 @@ class Player:
     Classe que representa o jogador.
     Gerencia o movimento, ataque e sistema de XP/level.
     """
-    def __init__(self):
+    def __init__(self, sound_manager):
         # Carregamento das animações
         self.player_idle = Sprite('imagens/player/player_idle.png', 7)
         self.player_idle.set_sequence_time(0, 7, PLAYER_IDLE_ANIMATION_DURATION, True)
 
         self.player_attacking = Sprite('imagens/player/player_attacking_down.png', 7)
         self.player_attacking.set_sequence_time(0, 7, PLAYER_ATTACK_ANIMATION_DURATION, False)
+        
+        # Gerenciador de som
+        self.sound_manager = sound_manager
         
         # Posição inicial
         self.posXplayer = PLAYER_START_X
@@ -53,6 +56,7 @@ class Player:
             if not self.space_pressed and not self.dash_active and self.posYplayer <= 0:
                 self.player_state = 'attacking'
                 self.player_attacking.play()
+                self.sound_manager.play_sword_attack()
                 self.dash_active = True
                 self.dash_target_y = HEIGHT - self.player_attacking.height 
             self.space_pressed = True
@@ -131,13 +135,17 @@ class Player:
         self.current_xp -= XP_TO_LEVEL_UP
         self.level += 1
         self.attribute_points += 1
-        
+        # Removido: self.sound_manager.play_player_levelup()
+
     def check_level_up(self):
         leveled_up = False
         XP_TO_LEVEL_UP = XP_BASE * (FACTOR ** self.level - 1)
         while self.current_xp >= XP_TO_LEVEL_UP:
-            self.level_up()            
+            self.level_up()
             leveled_up = True
+            XP_TO_LEVEL_UP = XP_BASE * (FACTOR ** self.level - 1)
+        if leveled_up:
+            self.sound_manager.play_player_levelup()
         return leveled_up
             
     def _update_animations(self):

@@ -6,11 +6,12 @@ from settings import *
 from PPlay.sprite import *
 
 class AttributesScreen:
-    def __init__(self, window, player):
+    def __init__(self, window, player, sound_manager):
         self.window = window
         self.fundo = GameImage("imagens/tela_atributos/fundo_atributos.png")
         self.painel = GameImage("imagens/tela_atributos/painel_atributos.png")
         self.player = player
+        self.sound_manager = sound_manager
         self.icones = [
             Sprite("imagens/tela_atributos/icone_forca.png"),
             Sprite("imagens/tela_atributos/icone_ataque.png"),
@@ -87,6 +88,7 @@ class AttributesScreen:
             if self.points_to_spend > 0:
                 self.temp_attribute_increases[i] += 1
                 self.points_to_spend -= 1
+                self.sound_manager.play_atributo_up()
             self.mouse_was_pressed = True
 
     def _handle_confirmar(self):
@@ -94,11 +96,10 @@ class AttributesScreen:
             for i, (nome_display, attr_name) in enumerate(self.atributos):
                 current_value = getattr(self.player, attr_name)
                 setattr(self.player, attr_name, current_value + self.temp_attribute_increases[i])
-            
             self.player.attribute_points = self.points_to_spend
-            
             self.temp_attribute_increases = [0] * self.num_atributos
             self.mouse_was_pressed = True
+            self.sound_manager.play_atributo_confirm()
             return True
         return False
         

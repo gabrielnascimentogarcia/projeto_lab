@@ -5,9 +5,10 @@ from PPlay.sprite import *
 from settings import *
 
 class MainMenu:
-    def __init__(self, window) -> None:
+    def __init__(self, window, sound_manager) -> None:
         self.window = window
         self.mouse = window.get_mouse()
+        self.sound_manager = sound_manager
         self.bg_image = GameImage("imagens/tela_inicial/fundo_menu.png")
         self.logo_image = GameImage("imagens/tela_inicial/logo.png")
         self.botao_iniciar = Sprite("imagens/tela_inicial/botao_iniciar.png")
@@ -18,6 +19,7 @@ class MainMenu:
         self.bg_image.set_position(0, 0)
         self.logo_image.set_position(logo_x, logo_y)
         self.botao_iniciar.set_position(botao_x, botao_y)
+        self._was_hovering = False
 
     def draw(self):
         self.bg_image.draw()
@@ -30,7 +32,12 @@ class MainMenu:
         )
         
     def button_clicked(self):
-        if self.mouse.is_over_object(self.botao_iniciar) and self.mouse.is_button_pressed(1):
+        hovering = self.mouse.is_over_object(self.botao_iniciar)
+        if hovering and not self._was_hovering:
+            self.sound_manager.play_botao_hover()
+        self._was_hovering = hovering
+        if hovering and self.mouse.is_button_pressed(1):
+            self.sound_manager.play_botao_click()
             return True
         
     def run(self):

@@ -8,7 +8,7 @@ class Bat:
     Classe que representa um morcego inimigo.
     Gerencia o movimento, animações e estados do morcego.
     """
-    def __init__(self, x, y, level):
+    def __init__(self, x, y, level, sound_manager):
         # Carregamento das animações
         self.fly_animation = Animation('imagens/Bat with VFX/fly.png', 8)
         self.fly_animation.set_sequence_time(0, 7, BAT_FLY_ANIMATION_DURATION, True)
@@ -18,6 +18,9 @@ class Bat:
 
         self.die_animation = Animation('imagens/Bat with VFX/death.png', 8)
         self.die_animation.set_sequence_time(0, 7, BAT_DIE_ANIMATION_DURATION, False)
+
+        # Gerenciador de som
+        self.sound_manager = sound_manager
 
         # Posição inicial
         self.x = max(0, min(x, WIDTH - self.fly_animation.width))
@@ -88,6 +91,7 @@ class Bat:
         if self.state == 'flying':
             self.state = 'hurt'
             self.hurt_animation.play()
+            self.sound_manager.play_bat_hurt()
             self.hit_count += damage
         if self.hit_count >= (BAT_HITS_TO_DIE + (self.current_level - 1) // 2):
             self.die()
@@ -99,6 +103,7 @@ class Bat:
         if self.state != 'dead' and not self.death_complete:
             self.state = 'dying'
             self.die_animation.play()
+            self.sound_manager.play_bat_death()
 
     def is_dead(self):
         """Verifica se o morcego está morto"""

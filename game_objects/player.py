@@ -32,6 +32,7 @@ class Player:
         
         # Sistema de progressão
         self.current_xp = 0
+        self.total_xp = 0  # XP acumulativo
         self.level = 1
         self.attribute_points = 0
         
@@ -130,6 +131,7 @@ class Player:
             
     def gain_xp(self, amount):
         self.current_xp += amount
+        self.total_xp += amount  
 
     def level_up(self):
         XP_TO_LEVEL_UP = XP_BASE * (FACTOR ** self.level - 1)

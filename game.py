@@ -20,6 +20,7 @@ class Game:
         self.spawn_timer = 0
         self.spawn_delay = MIN_SPAWN_DELAY
         self.game_over = False
+        self.points = 0
 
     def update_health_ui(self):
         self.shield_quantity.clear()
@@ -70,9 +71,9 @@ class Game:
             
     def draw(self):
         self.bg_image.draw()
+        self.draw_health_ui()
         self.player.draw()
         self.draw_bats() 
-        self.draw_health_ui()
         
         #self.window.draw_text(f"XP: {self.player.current_xp}", 0, 0, 15, 'white')
         #self.window.draw_text(f"level: {self.player.level}", 0, 15, 15, 'white')
@@ -98,6 +99,7 @@ class Game:
         y = (HEIGHT - game_over_img.height) // 2
         game_over_img.set_position(x, y)
         game_over_img.draw()
+        self.window.draw_text(f"PONTOS: {self.player.total_xp}", WIDTH//2 - 90, y + game_over_img.height + 15, 30, 'white', bold=True)
         
     def exit(self):
         if self.keyboard.key_pressed("ESC"):

@@ -25,8 +25,8 @@ class Game:
     def update_health_ui(self):
         self.shield_quantity.clear()
         for i in range(self.player.shield_health):
-            icon = GameImage("imagens/tela_atributos/icone_escudo.png")
-            icon.set_position(0 + i * icon.width, 0)
+            icon = GameImage("imagens/tela_game/icone_escudo.png")
+            icon.set_position(0 + i * 15, 0)
             self.shield_quantity.append(icon)
 
     def draw_health_ui(self):
